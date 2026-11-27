@@ -1,6 +1,9 @@
 <?php
 // The website (user) and the admin panel use separate sessions, so one
 // browser can be logged in as a user in one tab and as admin in another.
+// Buffer the output so redirects / cookies still work after the page header was printed
+if (ob_get_level() === 0) ob_start();
+
 // Running on Vercel? (Vercel sets the VERCEL environment variable)
 define('ON_VERCEL', (bool)(getenv('VERCEL') ?: ($_SERVER['VERCEL'] ?? false)));
 date_default_timezone_set('Asia/Dhaka');

@@ -3,6 +3,8 @@
 // Needed on Vercel, because its servers are temporary and cannot keep session files.
 class CkDbSessionHandler implements SessionHandlerInterface {
     private PDO $db;
+    private string $lastData = '';
+    private int $lastTime = 0;
     public function __construct(PDO $db) { $this->db = $db; }
 
     private function create(): void {
@@ -22,9 +24,13 @@ class CkDbSessionHandler implements SessionHandlerInterface {
             return '';
         }
         $d = $st->fetchColumn();
-        return $d === false ? '' : (string)$d;
+        $this->lastData = $d === false ? '' : (string)$d;
+        $this->lastTime = time();
+        return $this->lastData;
     }
     public function write(string $id, string $data): bool {
+        // nothing changed: skip the database write (faster page loads)
+        if ($data === $this->lastData && $data !== '' && time() - $this->lastTime < 600) return true;
         $st = $this->db->prepare("REPLACE INTO ck_sessions (id, data, updated_at) VALUES (?, ?, ?)");
         return $st->execute([$id, $data, time()]);
     }
