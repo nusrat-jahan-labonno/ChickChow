@@ -1,0 +1,46 @@
+digraph ER {
+  rankdir=LR; splines=polyline; nodesep=0.5; ranksep=1.0;
+  node [shape=plain fontname="Helvetica" fontsize=11];
+  edge [fontname="Helvetica" fontsize=10 color="#555555" arrowhead=crow arrowtail=tee dir=both headlabel="" ];
+
+  users [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>users</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT">name VARCHAR(100)</TD></TR><TR><TD ALIGN="LEFT">email VARCHAR(150) UNIQUE</TD></TR>
+  <TR><TD ALIGN="LEFT">phone VARCHAR(20)</TD></TR><TR><TD ALIGN="LEFT">password VARCHAR(255) (hash)</TD></TR><TR><TD ALIGN="LEFT">role ENUM(user, admin)</TD></TR><TR><TD ALIGN="LEFT">created_at TIMESTAMP</TD></TR></TABLE>>];
+
+  addresses [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>addresses</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT"><B>FK</B> user_id INT</TD></TR><TR><TD ALIGN="LEFT">label VARCHAR(30)</TD></TR><TR><TD ALIGN="LEFT">area VARCHAR(60)</TD></TR><TR><TD ALIGN="LEFT">address VARCHAR(255)</TD></TR></TABLE>>];
+
+  orders [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>orders</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT"><B>FK</B> user_id INT</TD></TR><TR><TD ALIGN="LEFT">full_name, phone, address, delivery_area</TD></TR>
+  <TR><TD ALIGN="LEFT"><B>FK</B> coupon_id INT (nullable)</TD></TR><TR><TD ALIGN="LEFT">coupon_code VARCHAR(20)</TD></TR><TR><TD ALIGN="LEFT">subtotal, discount, delivery_charge,<BR ALIGN="LEFT"/>total DECIMAL</TD></TR><TR><TD ALIGN="LEFT">payment_method ENUM(cod, online)</TD></TR>
+  <TR><TD ALIGN="LEFT">status ENUM(Pending, Preparing,<BR ALIGN="LEFT"/>Out for Delivery, Delivered)</TD></TR><TR><TD ALIGN="LEFT">created_at TIMESTAMP</TD></TR></TABLE>>];
+
+  order_items [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>order_items</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT"><B>FK</B> order_id INT</TD></TR><TR><TD ALIGN="LEFT"><B>FK</B> food_id INT</TD></TR><TR><TD ALIGN="LEFT">quantity INT</TD></TR><TR><TD ALIGN="LEFT">price DECIMAL(8,2)</TD></TR></TABLE>>];
+
+  food_items [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>food_items</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT"><B>FK</B> restaurant_id INT</TD></TR><TR><TD ALIGN="LEFT"><B>FK</B> category_id INT</TD></TR><TR><TD ALIGN="LEFT">name VARCHAR(120)</TD></TR>
+  <TR><TD ALIGN="LEFT">description TEXT</TD></TR><TR><TD ALIGN="LEFT">price DECIMAL(8,2)</TD></TR><TR><TD ALIGN="LEFT">discount_percent TINYINT</TD></TR><TR><TD ALIGN="LEFT">image VARCHAR(255)</TD></TR><TR><TD ALIGN="LEFT">status ENUM(available, unavailable)</TD></TR></TABLE>>];
+
+  restaurants [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>restaurants</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT">name VARCHAR(120)</TD></TR><TR><TD ALIGN="LEFT">cuisine VARCHAR(60)</TD></TR><TR><TD ALIGN="LEFT">area VARCHAR(60)</TD></TR><TR><TD ALIGN="LEFT">rating DECIMAL(2,1)</TD></TR><TR><TD ALIGN="LEFT">image VARCHAR(255)</TD></TR></TABLE>>];
+
+  categories [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>categories</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT">name VARCHAR(60) UNIQUE</TD></TR></TABLE>>];
+
+  coupons [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>coupons</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT">code VARCHAR(20) UNIQUE</TD></TR><TR><TD ALIGN="LEFT">description VARCHAR(150)</TD></TR><TR><TD ALIGN="LEFT">type ENUM(percent, fixed)</TD></TR><TR><TD ALIGN="LEFT">value, min_order, max_discount INT</TD></TR><TR><TD ALIGN="LEFT">expires_at DATE</TD></TR><TR><TD ALIGN="LEFT">is_active TINYINT(1)</TD></TR></TABLE>>];
+
+  reviews [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#f57c00"><FONT COLOR="white"><B>reviews</B></FONT></TD></TR>
+  <TR><TD ALIGN="LEFT"><B>PK</B> id INT</TD></TR><TR><TD ALIGN="LEFT"><B>FK</B> order_id INT UNIQUE</TD></TR><TR><TD ALIGN="LEFT"><B>FK</B> user_id INT</TD></TR><TR><TD ALIGN="LEFT">rating TINYINT (1 to 5)</TD></TR><TR><TD ALIGN="LEFT">comment VARCHAR(500)</TD></TR><TR><TD ALIGN="LEFT">created_at TIMESTAMP</TD></TR></TABLE>>];
+
+  users -> addresses [label="1 : N"];
+  users -> orders [label="1 : N"];
+  orders -> order_items [label="1 : N"];
+  food_items -> order_items [label="1 : N"];
+  restaurants -> food_items [label="1 : N"];
+  categories -> food_items [label="1 : N"];
+  coupons -> orders [label="1 : N"];
+  orders -> reviews [label="1 : 1"];
+  users -> reviews [label="1 : N"];
+}
